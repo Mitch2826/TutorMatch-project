@@ -16,8 +16,8 @@ class TutorRequest(Base):
     __tablename__ = 'tutor_requests'
     
     id = Column(Integer, primary_key=True, autoincrement=True)
-    student_id = Column(Integer, ForeignKey('users.id'), nullable=False)
-    tutor_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    student_id = Column(Integer, ForeignKey('students.id'), nullable=False)
+    tutor_id = Column(Integer, ForeignKey('tutors.id'), nullable=False)
     subject = Column(String(100), nullable=False)
     mode = Column(String(20), nullable=False)
     status = Column(SQLEnum(RequestStatus), default=RequestStatus.PENDING)

@@ -4,8 +4,8 @@ from lib.models.tutor import Tutor
 from lib.models.tutor_request import TutorRequest, RequestStatus
 
 __all__ = [ 
-    'User',
-    'UserRole',
+    'Student',
+    'Tutor',
     'TutoringMode',
     'TutorRequest',
     'RequestStatus'
