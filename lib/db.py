@@ -13,3 +13,9 @@ Base = declarative_base()
 
 def get_session():
     return SessionLocal()
+def init_db():
+   
+    from lib.models import Student, Tutor, TutorRequest  # import models here
+    Base.metadata.create_all(bind=engine)
+    print("Database initialized successfully.")
+
