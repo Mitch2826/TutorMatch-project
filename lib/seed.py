@@ -164,47 +164,50 @@ def seed_sample_data():
     finally:
         session.close()
         
-    def reset_database():
+def reset_database():
         
-        print("\n" + "="*50)
-        print("  WARNING: This will DELETE ALL DATA!")
-        print("="*50)
-        confirm = input("\nType 'YES' to confirm reset: ").strip()
+    print("\n" + "="*50)
+    print("  WARNING: This will DELETE ALL DATA!")
+    print("="*50)
+    confirm = input("\nType 'YES' to confirm reset: ").strip()
         
-        if confirm == "YES":
-            try:
-                print("\n  Dropping all tables...")
-                Base.metadata.drop_all(bind=engine)
-                print(" Tables dropped!")
-                print()
-                create_tables()
-                seed_sample_data()
-            except Exception as e:
-                print(f" Error during reset: {e}\n")
-        else:
-            print(" Operation cancelled.\n")
-
-    if __name__ == "__main__":
-        
-        print("\n" + "="*50)
-        print("   TutorMatch - DB Initialization 🇰🇪")
-        print("="*50 + "\n")
-        
-        print("1. Initialize fresh database (create tables + seed data)")
-        print("2. Reset database (DELETE ALL DATA and reinitialize)")
-        print("3. Exit")
-        print("-"*50)
-        
-        choice = input("Select option (1-3): ").strip()
-        
-        if choice == "1":
+    if confirm == "YES":
+        try:
+            print("\n  Dropping all tables...")
+            Base.metadata.drop_all(bind=engine)
+            print(" Tables dropped!")
+            print()
             create_tables()
             seed_sample_data()
-        elif choice == "2":
-            reset_database()
-        elif choice == "3":
-            print("Exiting...\n")
-        else:
-            print(" Invalid option.\n")
+        except Exception as e:
+            print(f" Error during reset: {e}\n")
+    else:  
+        print(" Operation cancelled.\n") 
         
+if __name__ == "__main__":
     
+    print("\n" + "="*50)
+    print("   TutorMatch - DB Initialization 🇰🇪")
+    print("="*50 + "\n")
+        
+    print("1. Initialize fresh database (create tables + seed data)")
+    print("2. Reset database (DELETE ALL DATA and reinitialize)")
+    print("3. Exit")
+    print("-"*50)
+        
+    choice = input("Select option (1-3): ").strip()
+        
+    if choice == "1":  
+        create_tables()
+        seed_sample_data()
+        
+    elif choice == "2":
+        
+        reset_database()
+    elif choice == "3":
+        print("Exiting...\n")
+    else:
+        print(" Invalid option.\n")
+        
+        
+        
