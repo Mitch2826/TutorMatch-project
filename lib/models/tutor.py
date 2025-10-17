@@ -1,13 +1,9 @@
 from sqlalchemy import Column, Integer, String, Float, Enum as SQLEnum, DateTime
 from sqlalchemy.orm import relationship
 from lib.db import Base
-from datetime import datetime
-import enum
+from datetime import datetime, timezone
+from lib.models.enums import TutoringMode
 
-class TutoringMode(enum.Enum):
-    PHYSICAL = "physical"
-    ONLINE = "online"
-    BOTH = "both"
     
 class Tutor(Base):
     __tablename__ = 'tutors'
@@ -23,7 +19,7 @@ class Tutor(Base):
     hourly_rate = Column(Float, nullable=False)
     tutoring_mode = Column(SQLEnum(TutoringMode), default=TutoringMode.BOTH)
     availability = Column(String(100), default="Available")
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     
     #relations
     tutor_requests = relationship('TutorRequest', back_populates='tutor', cascade='all, delete-orphan')
