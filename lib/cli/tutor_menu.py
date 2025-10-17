@@ -1,18 +1,22 @@
 from lib.models import Student, Tutor, TutorRequest, RequestStatus
 import sys
 
+#tutor dashboard
 class TutorMenu:
     def __init__(self,session, tutor):
         self.session = session
         self.tutor = tutor
+        
     def clear_screen(self):
         sys.stdout.write('\033[2J\033[H')
         sys.stdout.flush()
-    def display_header(self):
         
+    def display_header(self): 
         print("\n" + "="*50)
         print(f"         TUTOR DASHBOARD - {self.tutor.name}")
         print("="*50 + "\n")
+        
+    #display tutor menu options
     def tutor_menu(self):
         while True:
             self.clear_screen()
@@ -47,8 +51,9 @@ class TutorMenu:
                 self.logout()
                 break
             else:
-    
                 input(" Invalid option. Press Enter to try again...")
+    
+    #view tutor requests         
     def view_my_requests(self):
         self.clear_screen()
         self.display_header()
@@ -87,6 +92,7 @@ class TutorMenu:
                         self.respond_to_request(pending[req_idx])
                 except ValueError:
                     pass
+                
         if accepted:
             print("\n ACCEPTED REQUESTS:\n")
             for idx, req in enumerate(accepted, 1):
@@ -95,10 +101,12 @@ class TutorMenu:
                 print(f"   Mode: {req.mode}")
                 print(f"   Contact: {req.student.phone} | {req.student.email}")
                 print()
+                
         if rejected:
             print(f"\n REJECTED REQUESTS ({len(rejected)}):\n")
             for req in rejected[:3]:
                 print(f"- {req.student.name} ({req.subject})")
+                
         input("Press Enter to continue...")
     
     def respond_to_request(self, request):
@@ -147,7 +155,7 @@ class TutorMenu:
     def view_all_students(self):
         self.clear_screen()
         self.display_header()
-        print("LEARNERS REQUESTING MY SERVICES\n")
+        print(" LEARNERS REQUESTING MY SERVICES\n")
         
         requests = self.session.query(TutorRequest).filter_by(
             tutor_id=self.tutor.id
@@ -274,11 +282,48 @@ class TutorMenu:
             self.session.rollback()
             print(f" Error updating profile: {str(e)}")
             input("Press Enter to continue...")
+            
+    def delete_account(self):
+        self.clear_screen()
+        self.display_header()
+        print(" DELETE MY ACCOUNT\n")
+        
+        print(" WARNING: This action is irreversible!")
+        print(f"You are about to delete: {self.tutor.name} ({self.tutor.email})")
+        print("\nThis will:")
+        print("  -> Remove your account from the system")
+        print("  -> Delete all student requests related to you")
+        print("  -> You will NOT be able to recover this data")
+        print("\n" + "-" * 50)
+        
+        confirm = input("Type 'DELETE' to confirm account deletion: ").strip()
+        
+        if confirm == "DELETE":
+            print("\nDeleting your account...")
+            try:
+                #delete tutor
+                self.session.delete(self.tutor)
+                self.session.commit()
+                
+                print(" Your account has been deleted successfully.")
+                print("You will be logged out now.")
+                input("Press Enter to continue...")
+                return True
+            except Exception as e:
+                self.session.rollback()
+                print(f"Error deleting account: {str(e)}")
+                input("Press Enter to continue...")
+                return False
+        else:
+            print("\n Account deletion cancelled.")
+            input("Press Enter to continue...")
+            return False
+        
     
     def logout(self):
         print("\n Logged out successfully.")
         input("Press Enter to continue...")
-    
+    #display tutor menu
     def display(self):
         self.tutor_menu()
         

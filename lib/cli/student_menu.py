@@ -349,12 +349,48 @@ class StudentMenu:
             print(f" Error updating profile: {str(e)}")
             input("Press Enter to continue...")
         
+    #delete student account
+    def delete_account(self):
+        self.clear_screen()
+        self.display_header()
+        print (" ! DELETE ACCOUNT\n")
+        
+        print(" WARNING: This action cannot be undone!")
+        print(f"You are about to delete: {self.student.name} ({self.student.email})")
+        print("\nThis will:")
+        print("  -> Remove your account from the system")
+        print("  -> Delete all tutor requests you've made")
+        print("  -> You will NOT be able to recover this data")
+        print("\n" + "-" * 50)
+            
+        confirm = input("Type 'DELETE' to confirm account deletion: ").strip()
+        
+        if confirm == "DELETE":
+            print("\n Deleting your account...")
+            try:
+                #delete the student
+                self.session.delete(self.student)
+                self.session.commit()
+                
+                print(" Your account has been deleted.")
+                print("You will be logged out now.")
+                input("Press Enter to continue...")
+                return True #logoout and exit menu
+            except Exception as e:
+                self.session.rollback()
+                print(f" Error deleting account: {str(e)}")
+                input("Press Enter to continue...")
+                return False
+        else:
+            print(" Account deletion cancelled.")
+            input("Press Enter to continue...")
+            return False
     
     #logout and return to main menu
     def logout(self):
         print("\n Logged out successfully!")
         input("Press Enter to return to main menu...")
         
-     
+     #display student menu
     def display(self):
         self.student_menu()
