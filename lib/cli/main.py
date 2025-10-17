@@ -190,7 +190,7 @@ class TutorMatchCLI:
         self.clear_screen()
         print("\n" + "="*50)
         print("Thank you for using TutorMatch!")
-        print("Goodbye! 👋")
+        print("Goodbye! ")
         print("="*50 + "\n")
         self.session.close()
         sys.exit(0)
@@ -204,7 +204,7 @@ class TutorMatchCLI:
         except Exception as e:
             print(f" Unexpected error: {str(e)}")
             self.session.close()
-    sys.exit(1)
+    
 
 def main():
     #entry
