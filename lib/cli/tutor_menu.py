@@ -12,9 +12,9 @@ class TutorMenu:
         sys.stdout.flush()
         
     def display_header(self): 
-        print("\n" + "="*50)
+        print("\n" + "="*100)
         print(f"         TUTOR DASHBOARD - {self.tutor.name}")
-        print("="*50 + "\n")
+        print("="*100 + "\n")
         
     #display tutor menu options
     def tutor_menu(self):
@@ -34,10 +34,11 @@ class TutorMenu:
             print("2. View My Profile")
             print("3. Update My Profile")
             print("4. View All Students Requesting Me")
-            print("5. Logout")
+            print("5. Delete My Account")
+            print("6. Logout")
             print("-" * 50)
             
-            choice = input("Select an option (1-5): ").strip()
+            choice = input("Select an option (1-6): ").strip()
             
             if choice == "1":
                 self.view_my_requests()
@@ -48,6 +49,9 @@ class TutorMenu:
             elif choice == "4":
                 self.view_all_students()
             elif choice == "5":
+                if self.delete_account():
+                    break
+            elif choice == "6":
                 self.logout()
                 break
             else:
@@ -67,11 +71,11 @@ class TutorMenu:
             print("No requests received yet.")
             input("Press Enter to continue...")
             return
-        
+        #categorize requests by status
         pending = [r for r in requests if r.status == RequestStatus.PENDING]
         accepted = [r for r in requests if r.status == RequestStatus.ACCEPTED]
         rejected = [r for r in requests if r.status == RequestStatus.REJECTED]
-        
+        #show pending requests first
         if pending:
             print(" PENDING REQUESTS:\n")
             
@@ -82,7 +86,7 @@ class TutorMenu:
                 print(f"   Message: {req.message or 'None'}")
                 print(f"   Requested: {req.created_at.strftime('%Y-%m-%d %H:%M')}")
                 print()
-                
+            #tutor responds to requests    
             choice = input("Enter request number to respond (or 'skip'): ").strip()
             
             if choice.lower() != 'skip':
@@ -93,6 +97,7 @@ class TutorMenu:
                 except ValueError:
                     pass
                 
+        #show accepted requests        
         if accepted:
             print("\n ACCEPTED REQUESTS:\n")
             for idx, req in enumerate(accepted, 1):
@@ -101,14 +106,15 @@ class TutorMenu:
                 print(f"   Mode: {req.mode}")
                 print(f"   Contact: {req.student.phone} | {req.student.email}")
                 print()
-                
+        #show rejected requests        
         if rejected:
             print(f"\n REJECTED REQUESTS ({len(rejected)}):\n")
-            for req in rejected[:3]:
+            for req in rejected[:10]: #show up to 10
                 print(f"- {req.student.name} ({req.subject})")
                 
         input("Press Enter to continue...")
     
+    #accept, reject or go back
     def respond_to_request(self, request):
         self.clear_screen()
         self.display_header()
@@ -127,14 +133,14 @@ class TutorMenu:
         print("-" * 50)
         
         choice = input("Select (1-3): ").strip()
-        
+        #handle tutor's decision
         try:
             if choice == "1":
                 request.accept()
                 self.session.commit()
                 print(f"\n Request accepted!")
                 print(f"   Contact the student at:")
-                print(f"    Phone: {request.student.phone}")
+                print(f"   Phone: {request.student.phone}")
                 print(f"   Email: {request.student.email}")
                 input("Press Enter to continue...")
             
@@ -151,12 +157,13 @@ class TutorMenu:
             self.session.rollback()
             print(f" Error: {str(e)}")
             input("Press Enter to continue...")
-            
+    
+    #view all students who have requested this tutor        
     def view_all_students(self):
         self.clear_screen()
         self.display_header()
         print(" LEARNERS REQUESTING MY SERVICES\n")
-        
+        #fetch all tutor requests
         requests = self.session.query(TutorRequest).filter_by(
             tutor_id=self.tutor.id
         ).all()
@@ -166,7 +173,7 @@ class TutorMenu:
             input("Press Enter to continue...")
             return
         
-        #get unique students
+        #group requests by student to show each student
         students_dict = {}
         for req in requests:
             student_id = req.student_id
@@ -177,10 +184,12 @@ class TutorMenu:
                 }
             students_dict[student_id]['requests'].append(req)
         
+        #display each student and summary of request statuses
         for idx, (student_id, data) in enumerate(students_dict.items(), 1):
             student = data['student']
             reqs = data['requests']
             
+            #count request statuses per student
             status_counts = {}
             for req in reqs:
                 status = req.status.value
@@ -200,7 +209,7 @@ class TutorMenu:
         self.clear_screen()
         self.display_header()
         print(" MY PROFILE\n")
-        
+        #display tutor details
         print(f"Name: {self.tutor.name}")
         print(f"Email: {self.tutor.email}")
         print(f"Phone: {self.tutor.phone}")
@@ -258,8 +267,10 @@ class TutorMenu:
             
             elif choice == "4":
                 print("\n1. Physical\n2. Online\n3. Both")
+                
                 mode_choice = input("Select (1-3): ").strip()
                 mode_map = {"1": "physical", "2": "online", "3": "both"}
+                #update tutoring mode
                 if mode_choice in mode_map:
                     from lib.models import TutoringMode
                     self.tutor.tutoring_mode = TutoringMode[mode_map[mode_choice].upper()]

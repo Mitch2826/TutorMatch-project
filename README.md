@@ -2,24 +2,26 @@
 TutorMatch is a Python CLI application that helps students find tutors and tutors manage incoming requests. It provides registration, login, profile management, and a request workflow between students and tutors.
 
 ## Features
-- Student and Tutor registration and login
-- Tutor profile management (subjects, qualifications, hourly rate, availability, tutoring mode)
-- Students can create tutoring requests
-- Tutors can review and accept or reject requests
+- Authentication
+  - Student and tutor registration with validation
+  - Login for both roles
+- Profile management
+  - Students and tutors can view and update their profiles
+- Tutor requests
+  - Students can view tutors and send tutor requests to the preferred tutor
+  - Tutors can view and accept or reject requests sent to them
+- Account deletion
+  - Students and tutors can delete their accounts
 
 ## Tech Stack
-- Python
-- SQLAlchemy ORM
-- PostgresSQL
+- Language: Python
+- ORM: SQLAlchemy
+- Database: PostgresSQL
+- Interface: CLI
 
 ## Getting Started
 
 ### 1. Clone and create a virtual environment
-- Windows:
-  - py -3.11 -m venv .venv
-  - .\.venv\Scripts\activate
-
-- Linux/macOS/WSL:
   - python3 -m venv venv
   - source venv/bin/activate
 
@@ -27,7 +29,7 @@ TutorMatch is a Python CLI application that helps students find tutors and tutor
 - pip install -r requirements.txt
 
 ### 3. Initialize or reset the database
-Run the seeder:
+Start fresh database:
 - python -m lib.seed
 
 Menu options:
@@ -55,26 +57,9 @@ After login:
 - Students see the student dashboard/menu
 - Tutors see the tutor dashboard/menu
 
-Tutor menu highlights:
-- View My Requests
-- View/Update Profile
-- View All Students Requesting Me
-- Logout
 
-## Data Model (overview)
 
-- Student
-  - name, email (unique), phone, location
-  - subjects_of_interest
-  - preferred_mode
-- Tutor
-  - name, email (unique), phone, location
-  - subjects, qualifications, hourly_rate
-  - tutoring_mode
-  - availability
-- TutorRequest
-  - Relationships: Student -> Tutor
-  - status (PENDING, REJECTED, ACCEPTED)
+
 
 
 

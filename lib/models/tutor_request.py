@@ -34,12 +34,12 @@ class TutorRequest(Base):
     
     def accept(self):
         self.status = RequestStatus.ACCEPTED
-        self.updated_at = lambda: datetime.now(timezone.utc)()
+        self.updated_at = datetime.now(timezone.utc)
         
     def reject(self):
         self.status = RequestStatus.REJECTED
-        self.updated_at = lambda: datetime.now(timezone.utc)()
+        self.updated_at = datetime.now(timezone.utc)
     
     def complete(self):
         self.status = RequestStatus.COMPLETED
-        self.updated_at = lambda: datetime.now(timezone.utc)()
+        self.updated_at = datetime.now(timezone.utc)

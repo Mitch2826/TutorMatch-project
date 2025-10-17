@@ -5,6 +5,7 @@ class StudentMenu:
     def __init__(self, session, student):
         self.session = session
         self.student = student
+    #clear the terminal screen
     def clear_screen(self):
         sys.stdout.write('\033[2J\033[H')
         sys.stdout.flush()
@@ -14,7 +15,9 @@ class StudentMenu:
         print(f"        ** Welcome, {self.student.name}! **")
         print("="*50 + "\n")
     def student_menu(self):
+        
         while True:
+            """Display student menu options"""
             self.clear_screen()
             self.display_header()
             
@@ -22,28 +25,35 @@ class StudentMenu:
             print("2. View My Requests")
             print("3. View My Profile")
             print("4. Update My Profile")
-            print("5. Logout")
+            print("5. Delete My Account")
+            print("6. Logout")
             print("-" * 50)
             
-            choice = input("Select an option (1-5): ").strip()
-            
+            choice = input("Select an option (1-6): ").strip()
+           #handle menu selection 
             if choice == "1":
                 self.find_tutor()
             elif choice == "2":
                 self.view_my_requests()
             elif choice == "3":
-                self.view_my_requests()
+                self.view_profile()
             elif choice == "4":
                 self.update_profile()
             elif choice == "5":
+                #delete account then exit menu if confirmed
+                if self.delete_account():
+                    break
+            elif choice == "6":
                 self.logout()
                 break
             else:
                 input("Invalid option. Press Enter to try again...")
+                
     #find and request a tutor
     def find_tutor(self):
         self.clear_screen()
         self.display_header()
+        """show options to find a tutor"""
         print ("FIND A TUTOR\n")
         
         print("Filter Options:")
@@ -70,8 +80,10 @@ class StudentMenu:
             input("Invalid option. Press Enter to continue...")
     
     def find_by_subject(self):
+        
         self.clear_screen()
         self.display_header()
+        #find tutors who teach a specific subject
         print("FIND TUTORS BY SUBJECT\n")
         
         subject = input("Enter subject to search: ").strip().lower()
@@ -88,10 +100,12 @@ class StudentMenu:
         else:
             print(f"No tutors found for '{subject}'")
             input("Press Enter to continue...")
-        
+     
+     #filter tutors by location   
     def find_by_location(self):
         self.clear_screen()
         self.display_header()
+        
         print("FIND TUTORS BY LOCATION\n")
         
         location = input("Enter location to search: ").strip().lower()
@@ -110,10 +124,11 @@ class StudentMenu:
             print(f"No tutors found in '{location}'")
             input("Press Enter to continue...")
             
-        
+    #filter tutors by tutoring mode    
     def find_by_mode(self):
         self.clear_screen()
         self.display_header()
+        
         print("FIND TUTORS BY TUTORING MODE\n")
         
         print("1. Physical (In-person)")
@@ -141,7 +156,7 @@ class StudentMenu:
             print(f"No tutors found with that mode")
             input("Press Enter to continue...")
     
-    
+    #view all available tutors
     def view_all_tutors(self):
         tutors = self.session.query(Tutor).all()
         
@@ -150,12 +165,14 @@ class StudentMenu:
         else:
             print("No tutors available at the moment.")
             input("Press Enter to continue...")
-        
+    
+    #show a list of tutors and allow the student to request one    
     def display_tutors(self, tutors):
         self.clear_screen()
         self.display_header()
-        print(f"FOUND {len(tutors)} TUTOR(S)\n")
         
+        print(f"FOUND {len(tutors)} TUTOR(S)\n")
+        #display tutor details
         for idx, tutor in enumerate(tutors, 1):
             print(f"{idx}. {tutor.name}")
             print(f"  Location: {tutor.location}")
@@ -180,6 +197,7 @@ class StudentMenu:
             input("Invalid input. Press Enter to continue...")
     
     def display_tutors_and_request(self, tutors, subject):
+        """Display tutors filtered by subject and let student send a request.""" 
         self.clear_screen()
         self.display_header()
         print(f"FOUND {len(tutors)} TUTOR(S) FOR '{subject}'\n")
@@ -207,7 +225,7 @@ class StudentMenu:
         except ValueError:
             input("Invalid input. Press Enter to continue...")
     
-    
+    #create a new tutor request for the selected tutor
     def request_tutor(self, tutor, subject=None):
         self.clear_screen()
         self.display_header()
@@ -237,7 +255,7 @@ class StudentMenu:
                 print(" You've already sent a request to this tutor!")
                 input("Press Enter to continue...")
                 return
-            
+            #create and save the new request
             request = TutorRequest(
                 student_id=self.student.id,
                 tutor_id=tutor.id,
@@ -259,6 +277,7 @@ class StudentMenu:
             input("Press Enter to continue...")
             
     def view_my_requests(self):
+        """Display all tutor requests sent by the logged-in student."""
         self.clear_screen()
         self.display_header()
         print(" MY TUTOR REQUESTS\n")
@@ -272,8 +291,15 @@ class StudentMenu:
             input("Press Enter to continue...")
             return
         
+        #display request details
         for idx, req in enumerate(requests, 1):
-            
+            status_view = {
+                "pending": " Pending",
+                "accepted": " Accepted",
+                "rejected": " Rejected",
+                "completed": " Completed"
+            }.get(req.status.value)
+            print(f"{idx}. {status_view} {req.tutor.name}")
             print(f"   Subject: {req.subject}")
             print(f"   Mode: {req.mode}")
             print(f"   Status: {req.status.value.upper()}")
@@ -283,14 +309,14 @@ class StudentMenu:
                 print(f"   Your message: {req.message}")
             print()
         
-    input("Press Enter to continue...")
+        input("Press Enter to continue...")
     
-    
+    #display student's profile details
     def view_profile(self):
         self.clear_screen()
         self.display_header()
-        print(" MY PROFILE\n")
         
+        print(" MY PROFILE\n")
         print(f"Name: {self.student.name}")
         print(f"Email: {self.student.email}")
         print(f"Phone: {self.student.phone}")
@@ -303,6 +329,7 @@ class StudentMenu:
     def update_profile(self):
         self.clear_screen()
         self.display_header()
+        
         print(" UPDATE PROFILE\n")
         
         print("What would you like to update?")
@@ -316,6 +343,7 @@ class StudentMenu:
         
         try:
             if choice == "1":
+                #update subjects of interest
                 new_subjects = input("New subjects (comma-separated): ").strip()
                 if new_subjects:
                     self.student.subjects_of_interest = new_subjects
@@ -323,6 +351,7 @@ class StudentMenu:
                     print(" Subjects updated!")
             
             elif choice == "2":
+                #update preferred tutoring mode
                 print("\n1. Physical\n2. Online\n3. Both")
                 mode_choice = input("Select (1-3): ").strip()
                 mode_map = {"1": "physical", "2": "online", "3": "both"}
@@ -333,6 +362,7 @@ class StudentMenu:
                     print(" Tutoring mode updated!")
             
             elif choice == "3":
+                #update location
                 new_location = input("New location: ").strip()
                 if new_location:
                     self.student.location = new_location

@@ -12,9 +12,9 @@ class TutorMatchCLI:
         self.current_user = None
     def display_header(self):
         """Display app header"""
-        print("\n" + "="*50)
+        print("\n" + "="*75)
         print("        ** TUTORMATCH - Connecting Learners & Tutors **")
-        print("="*50 + "\n")
+        print("="*75 + "\n")
     def clear_screen(self):
         sys.stdout.write('\033[2J\033[H')
         sys.stdout.flush()
