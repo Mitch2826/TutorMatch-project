@@ -2,12 +2,8 @@ from sqlalchemy import Column, Integer, String, Enum as SQLEnum, DateTime
 from sqlalchemy.orm import relationship
 from lib.db import Base
 from datetime import datetime, timezone
-import enum
+from lib.models.enums import TutoringMode
 
-class TutoringMode(enum.Enum):
-    PHYSICAL = "physical"
-    ONLINE = "online"
-    BOTH = "both"
     
 class Student(Base):
     __tablename__ = 'students'

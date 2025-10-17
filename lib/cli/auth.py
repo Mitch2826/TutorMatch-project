@@ -1,6 +1,8 @@
-from lib.models import Student, Tutor, TutorRequest, TutoringMode
-from sqlalchemy.exc import IntegrityError
 import hashlib
+from sqlalchemy.exc import IntegrityError
+from lib.models.student import Student
+from lib.models.tutor import Tutor
+from lib.models.enums import TutoringMode
 
 class AuthService: 
     def __init__(self, session):
@@ -14,7 +16,7 @@ class AuthService:
         return self.session.query(Student).filter_by(email=email).first() is not None
     
     def email_exists_tutor(self, email):
-        #check if email already registered as tutor
+        #check if email is already registered as tutor
         return self.session.query(Tutor).filter_by(email=email).first() is not None
     
     def email_exists(self, email):
@@ -124,6 +126,7 @@ class AuthService:
         except Exception as e:
             print(f"Login error: {str(e)}")
             return None
+        
     def login(self, email, password):
         try:
             if not email or not password:
