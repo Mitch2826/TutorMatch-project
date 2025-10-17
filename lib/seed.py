@@ -211,3 +211,19 @@ if __name__ == "__main__":
         
         
         
+    print("-"*50)
+        
+    choice = input("Select option (1-3): ").strip()
+        
+    if choice == "1":
+        
+        create_tables()
+        seed_sample_data()
+    elif choice == "2": 
+        reset_database()
+    elif choice == "3":
+        print("Exiting...\n")
+    else:
+        print(" Invalid option.\n")
+        
+    
